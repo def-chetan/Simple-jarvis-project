@@ -17,7 +17,7 @@ def speak(text):
 
 def aiprocess(command):
     client = genai.Client(
-        api_key="<API key>"
+        api_key="<your API>"
     )
 
     chat = client.chats.create(
