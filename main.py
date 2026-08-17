@@ -17,11 +17,11 @@ def speak(text):
 
 def aiprocess(command):
     client = genai.Client(
-        api_key="<your API>"
+        api_key="<YOURAPI>"
     )
 
     chat = client.chats.create(
-        model="gemini-3.6-flash",
+        model="gemini-3.7-flash",
         config=types.GenerateContentConfig(
             system_instruction="""
             You are a virtual assistant named Jarvis.
