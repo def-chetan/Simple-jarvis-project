@@ -3,6 +3,8 @@ import webbrowser
 import pyttsx3
 import musiclibrary
 from google import genai
+from google.genai import types
+
 
 
 r=sr.Recognizer()
@@ -15,26 +17,25 @@ def speak(text):
 
 def aiprocess(command):
     client = genai.Client(
-        api_key="AIzaSyCsx358wKxL9E54u9D2aazKBdsAMmbILlw"
+        api_key="<API key>"
     )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[
-            {
-                "role": "user",
-                "parts": [
-                    {
-                        "text": """You are a virtual assistant named Jarvis,
-                        skilled in general tasks like Alexa and Google Assistant.""",
-                        "comtent":command
-                    }
-                ]
-            }
-        ]
+    chat = client.chats.create(
+        model="gemini-3.6-flash",
+        config=types.GenerateContentConfig(
+            system_instruction="""
+            You are a virtual assistant named Jarvis.
+
+            You are helpful, intelligent, concise and friendly.
+            Answer questions clearly because your responses will be spoken aloud.
+            Keep responses reasonably short.
+            """
+        )
     )
 
-    return (response.text)
+    response = chat.send_message(command)
+
+    return response.text
 
 def processcommand(c):
     print("command:" , c)
@@ -53,7 +54,8 @@ def processcommand(c):
          webbrowser.open(link)
     
     else:
-        speak(aiprocess(c))
+        ans=aiprocess(c)
+        speak(ans)
 
 
 if __name__=="__main__":
