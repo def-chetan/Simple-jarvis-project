@@ -1,6 +1,7 @@
 import speech_recognition as sr
 import webbrowser
 import pyttsx3
+import musiclibrary
 
 r=sr.Recognizer()
 
@@ -11,15 +12,21 @@ def speak(text):
     engine.runAndWait()
 
 def processcommand(c):
-    print(c)
-    if "open google" in c.lower():
+    print("command:" , c)
+    c=c.lower()
+    if "open google" in c:
           webbrowser.open("https://google.com")
-    elif "open facebook" in c.lower():
+    elif "open facebook" in c:
           webbrowser.open("https://facebook.com")
-    elif "open youtube" in c.lower():
+    elif "open youtube" in c:
           webbrowser.open("https://youtube.com")
-    elif "open linkedin" in c.lower():
+    elif "open linkedin" in c:
           webbrowser.open("https://linkedin.com")
+    elif c.startswith("play"):
+         song=c.split(" ")[1]
+         link = musiclibrary.music[song]
+         webbrowser.open(link)
+    
     else:
         speak("wrong command")
 
@@ -34,21 +41,24 @@ if __name__=="__main__":
         try:
             with sr.Microphone() as source:
                 print("Listening...")
-                audio = r.listen(source, timeout=5, phrase_time_limit=3)
+                audio = r.listen(source, timeout=5, phrase_time_limit=5)
+                
             
             print("recognizing....")
             word=r.recognize_google(audio)
             if (word.lower() == "jarvis"):
                 speak("initializing jarvis")
                 while True:
+                    speak("Jarvis active...")
                     with sr.Microphone() as source:
-                            print("Jarvis active...")
-                            audio = r.listen(source)                
-                            print("recognizing....")
-                            command=r.recognize_google(audio)
-                            if (command.lower()=="jarvis stop"):
-                                 break
-                            processcommand(command)
+                        print("Jarvis active...")
+                        
+                        audio = r.listen(source)                
+                        print("recognizing....")
+                        command=r.recognize_google(audio)
+                        if (command.lower()=="jarvis stop"):
+                            break
+                        processcommand(command)
 
 
         except Exception as e:
