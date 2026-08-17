@@ -2,6 +2,8 @@ import speech_recognition as sr
 import webbrowser
 import pyttsx3
 import musiclibrary
+from google import genai
+
 
 r=sr.Recognizer()
 
@@ -10,6 +12,29 @@ engine= pyttsx3.init()
 def speak(text):
     engine.say(text)
     engine.runAndWait()
+
+def aiprocess(command):
+    client = genai.Client(
+        api_key="AIzaSyCsx358wKxL9E54u9D2aazKBdsAMmbILlw"
+    )
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": """You are a virtual assistant named Jarvis,
+                        skilled in general tasks like Alexa and Google Assistant.""",
+                        "comtent":command
+                    }
+                ]
+            }
+        ]
+    )
+
+    return (response.text)
 
 def processcommand(c):
     print("command:" , c)
@@ -28,7 +53,7 @@ def processcommand(c):
          webbrowser.open(link)
     
     else:
-        speak("wrong command")
+        speak(aiprocess(c))
 
 
 if __name__=="__main__":
@@ -57,6 +82,7 @@ if __name__=="__main__":
                         print("recognizing....")
                         command=r.recognize_google(audio)
                         if (command.lower()=="jarvis stop"):
+                            speak("jarvis stopped")
                             break
                         processcommand(command)
 
