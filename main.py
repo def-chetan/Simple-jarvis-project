@@ -5,23 +5,21 @@ import musiclibrary
 from google import genai
 from google.genai import types
 
-
-
-r=sr.Recognizer()
-
-engine= pyttsx3.init()
+r = sr.Recognizer()
 
 def speak(text):
+    # Initialize per call to avoid macOS pyttsx3 engine freezing
+    engine = pyttsx3.init()
     engine.say(text)
     engine.runAndWait()
 
 def aiprocess(command):
     client = genai.Client(
-        api_key="<YOURAPI>"
+        api_key="<YOUR API KEY"
     )
 
     chat = client.chats.create(
-        model="gemini-3.7-flash",
+        model="gemini-2.5-flash",
         config=types.GenerateContentConfig(
             system_instruction="""
             You are a virtual assistant named Jarvis.
@@ -34,33 +32,30 @@ def aiprocess(command):
     )
 
     response = chat.send_message(command)
-
     return response.text
 
 def processcommand(c):
-    print("command:" , c)
-    c=c.lower()
+    print("command:", c)
+    c = c.lower()
     if "open google" in c:
-          webbrowser.open("https://google.com")
+        webbrowser.open("https://google.com")
     elif "open facebook" in c:
-          webbrowser.open("https://facebook.com")
+        webbrowser.open("https://facebook.com")
     elif "open youtube" in c:
-          webbrowser.open("https://youtube.com")
+        webbrowser.open("https://youtube.com")
     elif "open linkedin" in c:
-          webbrowser.open("https://linkedin.com")
+        webbrowser.open("https://linkedin.com")
     elif c.startswith("play"):
-         song=c.split(" ")[1]
-         link = musiclibrary.music[song]
-         webbrowser.open(link)
-    
+        song = c.split(" ")[1]
+        link = musiclibrary.music[song]
+        webbrowser.open(link)
     else:
-        ans=aiprocess(c)
+        ans = aiprocess(c)
         speak(ans)
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     speak("Command Jarvis to initialize.....")
-    #listen for jarvis
+    # listen for jarvis
     while True:
         r = sr.Recognizer()
         
@@ -70,28 +65,21 @@ if __name__=="__main__":
                 print("Listening...")
                 audio = r.listen(source, timeout=5, phrase_time_limit=5)
                 
-            
             print("recognizing....")
-            word=r.recognize_google(audio)
-            if (word.lower() == "jarvis"):
+            word = r.recognize_google(audio)
+            if word.lower() == "jarvis":
                 speak("initializing jarvis")
                 while True:
                     speak("Jarvis active...")
                     with sr.Microphone() as source:
                         print("Jarvis active...")
-                        
-                        audio = r.listen(source)                
+                        audio = r.listen(source, timeout=5, phrase_time_limit=5)                
                         print("recognizing....")
-                        command=r.recognize_google(audio)
-                        if (command.lower()=="jarvis stop"):
+                        command = r.recognize_google(audio)
+                        if command.lower() == "jarvis stop":
                             speak("jarvis stopped")
                             break
                         processcommand(command)
 
-
         except Exception as e:
             print("error; {0}".format(e))
-
-
-
-
